@@ -5,9 +5,15 @@ from Book import Book
 
 
 class Manager:
-    def __init__(self, path: str):
-        self.online_store = OnlineStore(path)
+    """
+    Класс Менеджер:
 
+    path - путь к файлу БД
+    """
+    def __init__(self, path: str):
+        self.online_store = OnlineStore(path)  # Магазин, которым будем управлять
+
+    # Добавление нового заказа, создание нового пользователя, если такого нет в БД
     def add_order(self):
         phone_number = self.__get_number()
         if Customer.get_customer(phone_number, self.online_store.db['customers']) is None:
@@ -41,6 +47,7 @@ class Manager:
         self.online_store.db['revenue'] += order.get_purchase_amount()
         self.online_store.database.db_write(self.online_store.db)
 
+    # Добавление новой книги
     def add_book(self):
         title = input("Введите название книги: ")
         if Book.get_book(title, self.online_store.db['books']) is None:
@@ -58,6 +65,7 @@ class Manager:
         else:
             print("Такая книга уже есть")
 
+    # Функция для ввода номера телефона с проверкой на корректность ввода
     def __get_number(self):
         try:
             phone_number = input("Введите номер телефона: ")
@@ -73,6 +81,7 @@ class Manager:
             print("Неверный формат данных, попробуйте ещё раз!")
             return self.__get_number()
 
+    # Функция для возраста
     def __get_age(self):
         try:
             age = int(input("Введите возраст покупателя: "))
@@ -84,6 +93,7 @@ class Manager:
             print("Неверный формат данных, попробуйте ещё раз!")
             return self.__get_age()
 
+    # Функция для ввода года
     def __get_year(self):
         try:
             year = int(input("Введите год издания книги: "))
@@ -95,6 +105,7 @@ class Manager:
             print("Неверный формат данных, попробуйте ещё раз!")
             return self.__get_year()
 
+    # Функция для ввода цены
     def __get_price(self):
         try:
             price = int(input("Введите цену книги: "))
@@ -106,15 +117,19 @@ class Manager:
             print("Неверный формат данных, попробуйте ещё раз!")
             return self.__get_price()
 
+    # Получения списка заказов
     def list_orders(self):
         return self.online_store.db['orders']
 
+    # Получения списка пользователей
     def list_customers(self):
         return self.online_store.db['customers']
 
+    # Получения списка книг
     def list_books(self):
         return self.online_store.db['books']
 
+    # Найти заказ по id
     def get_order(self, order_id: int):
         for i in range(len(self.online_store.db['orders'])):
             if self.online_store.db['orders'][i]['order_id'] == order_id:
@@ -122,6 +137,7 @@ class Manager:
                              self.online_store.db['orders'][i]['customer_id'],
                              self.online_store.db['orders'][i]['positions'])
 
+    # Найти книгу по id
     def get_book(self, book_id: int):
         for i in range(len(self.online_store.db['books'])):
             if self.online_store.db['books'][i]['book_id'] == book_id:
@@ -130,6 +146,7 @@ class Manager:
                             self.online_store.db['books'][i]['year'], self.online_store.db['books'][i]['price'],
                             self.online_store.db['books'][i]['link'])
 
+    # Изменить цену книги по id
     def update_book(self, book_id: int, price: int):
         for i in range(len(self.online_store.db['books'])):
             if self.online_store.db['books'][i]['book_id'] == book_id:
@@ -137,6 +154,7 @@ class Manager:
                 self.online_store.database.db_write(self.online_store.db)
                 return
 
+    # Удалить книгу
     def delete_book(self, book_id: int):
         for book in self.online_store.db['books']:
             if book['book_id'] == book_id:
@@ -144,6 +162,7 @@ class Manager:
                 self.online_store.database.db_write(self.online_store.db)
                 return
 
+    # Изменить номер телефона пользователя по id
     def update_customers(self, customer_id: int, number: str):
         for i in range(len(self.online_store.db['customers'])):
             if self.online_store.db['customers'][i]['customer_id'] == customer_id:
@@ -151,9 +170,10 @@ class Manager:
                 self.online_store.database.db_write(self.online_store.db)
                 return
 
+    # Получить выручку магазина
     def get_revenue(self):
         return self.online_store.db['revenue']
 
-
+# Класс для обработки ошибок
 class LicenseError(Exception):
     pass
